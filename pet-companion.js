@@ -1,0 +1,10 @@
+const petGestures={
+  'pet-highfive':{action:'highfive',icon:'✋',text:'啪！击掌成功，我们一起加油！'},
+  'pet-hug':{action:'hug',icon:'💗',text:'抱抱你，认真学习的你很可爱！'},
+  'pet-dance':{action:'dance',icon:'🎵',text:'扭一扭，转个圈，和你在一起真开心！'}
+};
+function quizPetCompanion(done=false){return `<section class="quiz-companion" aria-label="宠物伴学"><button class="quiz-pet pet-touch" data-action="pet-touch" aria-label="摸摸${esc(state.pet)}">${petArt()}<span class="reaction-prop" aria-hidden="true">${done?'🌟':'💕'}</span></button><div class="quiz-pet-copy"><strong>${esc(state.pet)} <small>Lv.${1+Math.floor(state.xp/50)}</small></strong><p class="quiz-pet-message" role="status">${done?'你的每一点进步，我都看见啦！':'我陪你一起想。点点我，摸摸脑袋吧！'}</p><div class="quiz-pet-actions"><button data-action="pet-highfive">✋ 击掌</button><button data-action="pet-hug">💗 抱抱</button><button data-action="pet-dance">🎵 跳舞</button></div></div></section>`}
+function paintPetReaction(action,icon,text){document.querySelectorAll('.pet-touch').forEach(stage=>{stage.classList.remove('react-touch','react-feed','react-ball','react-rest','react-hungry','react-highfive','react-hug','react-dance','react-cheer','react-think');stage.classList.add('react-'+action);let prop=stage.querySelector('.reaction-prop');if(!prop){prop=document.createElement('span');prop.className='reaction-prop';prop.setAttribute('aria-hidden','true');stage.appendChild(prop)}prop.textContent=icon});document.querySelectorAll('.quiz-pet-message').forEach(el=>el.textContent=text)}
+function clearPetMotion(){clearTimeout(petReactionTimer);petReaction=null;document.querySelectorAll('.pet-touch').forEach(stage=>{[...stage.classList].filter(c=>c.startsWith('react-')).forEach(c=>stage.classList.remove(c));stage.querySelector('.reaction-prop')?.remove()})}
+function quizPetResponse(correct){clearTimeout(petReactionTimer);paintPetReaction(correct?'cheer':'think',correct?'🌟':'💡',correct?'答对啦！你的努力让我们一起成长！':'没关系，我陪你看看讲解，再慢慢想一想。');petReactionTimer=setTimeout(clearPetMotion,2600)}
+document.addEventListener('click',e=>{const b=e.target.closest('button');const gesture=petGestures[b?.dataset.action];if(!gesture)return;reactPet(gesture.action,gesture.icon,gesture.text)});
